@@ -40,10 +40,12 @@
 
   var details = Array.prototype.slice.call(document.querySelectorAll('details'));
 
-  /* ---- an open abstract is moved below its sibling links by the `order` in
-          .meta, so DOM order and reading order diverge. Put focus into the
-          abstract as it opens and the keyboard path continues forward from
-          what the eye is on, instead of jumping back up to the link row. ---- */
+  /* ---- .abs lives outside <details> (as .meta's last child, so the
+          toggle/links row never reflows when it opens), so it has to be
+          reached via the shared .meta parent rather than d.querySelector.
+          Put focus into it as it opens so the keyboard path continues
+          forward from what the eye is on, instead of jumping back up to
+          the link row. ---- */
   details.forEach(function (d) {
     d.addEventListener('toggle', function () {
       if (!d.open) { return; }
@@ -51,7 +53,7 @@
       // opens all five, and stealing focus there would scroll the page out
       // from under whoever just hit Ctrl+P.
       if (document.activeElement !== d.querySelector('summary')) { return; }
-      var body = d.querySelector('.abs');
+      var body = d.parentElement.querySelector('.abs');
       if (!body) { return; }
       body.setAttribute('tabindex', '-1');
       body.focus({ preventScroll: true });

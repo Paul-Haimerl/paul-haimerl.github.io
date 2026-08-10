@@ -372,8 +372,10 @@ p:last-child { margin-bottom: 0; }
 }
 .cite .doi:hover { color: var(--accent); }
 
-/* meta row: abstract toggle + links, side by side; toggle goes
-   full-width and drops below the links once it is opened */
+/* meta row: abstract toggle + links, side by side, always in this fixed
+   row — .abs lives outside <details> as .meta's last child, so it never
+   competes with the toggle/links for room and just drops into its own
+   full-width line below them once shown. */
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -388,7 +390,10 @@ p:last-child { margin-bottom: 0; }
 .meta > a:hover, .meta summary:hover { color: var(--accent-2); }
 
 .meta details { flex: 0 0 auto; }
-.meta details[open] { flex: 1 0 100%; order: 1; margin-top: 12px; }
+/* .abs is a sibling of <details>, not its child, so its visibility is
+   tied to the details' open state via this selector instead of the
+   browser's native (child-only) details-content hiding. */
+.meta details:not([open]) ~ .abs { display: none; }
 
 .meta summary {
   list-style: none;
@@ -405,6 +410,7 @@ p:last-child { margin-bottom: 0; }
 .meta details[open] summary::before { transform: rotate(90deg); }
 
 .abs {
+  flex: 1 0 100%;
   border-left: 1px solid var(--rule);
   padding: 2px 0 2px 20px;
   margin-top: 12px;
