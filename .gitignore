@@ -1,0 +1,11 @@
+picture.png
+README.md
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+.claude/

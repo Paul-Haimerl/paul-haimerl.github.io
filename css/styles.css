@@ -1,0 +1,689 @@
+/* ------------------------------------------------------------------ *
+ *  Fonts — all self-hosted from assets/fonts, so the site has no
+ *  external dependencies and cannot break when a CDN moves.
+ *
+ *  Latin Modern Roman (Computer Modern Unicode Serif, OFL) is the
+ *  LaTeX face: self-evidently academic.
+ * ------------------------------------------------------------------ */
+@font-face {
+  font-family: "Latin Modern Roman";
+  src: url("../assets/fonts/cmunrm.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Latin Modern Roman";
+  src: url("../assets/fonts/cmunti.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Latin Modern Roman";
+  src: url("../assets/fonts/cmunbx.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../assets/fonts/jetbrains-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Tokens
+ *
+ *  The type scale is four steps and nothing else. If a new size feels
+ *  necessary, add a token here first — that is the whole point of the
+ *  constraint. Hierarchy below the body size is carried by ink colour
+ *  (--ink-2, --ink-3), never by shaving a pixel off the size.
+ * ------------------------------------------------------------------ */
+:root {
+  /* The palette is light-only by design. Declaring it stops Android Chrome's
+     Force Dark from inverting the page, which would wreck the hardcoded brand
+     fills in the rail icons — the near-black GitHub mark worst of all. */
+  color-scheme: light;
+
+  --paper:    #f4f4f1;
+  --ink:      #16181c;
+  --ink-2:    #4a4c52;   /* darkened for legibility */
+  --ink-3:    #5f6167;   /* 5.6:1 — the label size needs more than the AA floor */
+  --rule:     #16181c40; /* 25% ink — the 12% original was near-invisible */
+  --accent:   #274b73;
+  --accent-2: #1b3652;
+  --accent-3: #274b7359; /* 35% accent — the job-market badge hairline */
+  --tbd:      #a33a3a;
+
+  --serif: "Latin Modern Roman", Cambria, Georgia, serif;
+  --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Four sizes. The rail name scales with viewport height because the
+     rail must fit a short laptop screen without clipping. */
+  --fs-display: clamp(27px, 3.4vh, 34px);
+  --fs-title:   21px;
+  --fs-body:    17px;
+  --fs-label:   11.5px;
+
+  --track:    .14em;   /* the one tracking value; labels only */
+  --lh-body:  1.7;
+  --lh-list:  1.9;     /* stacked short lines: nav, role, address */
+  --lh-tight: 1.1;
+
+  --rail: 300px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;   /* stop iOS Safari inflating body text */
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;        /* blanket guard against overflow */
+}
+
+/* Headings carry hierarchy through size, rules and whitespace, never
+   through weight. Declaring it once here removes four scattered resets. */
+h1, h2, h3 { font-weight: 400; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color .18s ease;
+}
+a:hover { color: var(--accent-2); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ *
+ *  The label
+ *
+ *  Mono means "machine-readable string", never prose. It has exactly
+ *  two forms: this uppercase label for metadata, and the plain,
+ *  body-sized form used for package identifiers (see .pkg h3).
+ *
+ *  This is the only tracked-uppercase rule on the site. Everything that
+ *  is metadata — roles, section labels, links, terms, years, versions,
+ *  the footer — joins this selector list rather than restating it.
+ * ------------------------------------------------------------------ */
+.rail .role,
+.rail .cv,
+.sub-title,
+.jobmarket,
+.meta > a,
+.meta summary,
+.pkg h3 .ver,
+.course .term,
+.course .what .lvl,
+.years .y,
+.legend,
+footer {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Shell
+ * ------------------------------------------------------------------ */
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail) 1fr;
+  align-items: start;
+  /* No max-width: the rail stays flush left at every width and the content
+     column takes the room instead. */
+}
+
+/* ------------------------------------------------------------------ *
+ *  Left rail
+ * ------------------------------------------------------------------ */
+.rail {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;   /* 100vh is wrong where the address bar retracts */
+  overflow-y: auto;
+  padding: 44px 40px 36px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Flex items shrink before the container scrolls. Without this the portrait
+   is squashed to a slim bar on any viewport too short for the whole rail. */
+.rail > * { flex: 0 0 auto; }
+
+.rail .portrait {
+  width: 100%;
+  max-width: 190px;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  background: #e9e9e5;
+}
+.rail .portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rail .name {
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: -.01em;
+  margin: 0 0 10px;
+}
+/* Two blocks rather than a <br>, so the accessible name and a copy-paste both
+   read "Paul Haimerl" instead of "PaulHaimerl". */
+.rail .name span { display: block; }
+.rail .role {
+  color: var(--ink-2);
+  line-height: var(--lh-list);
+  margin: 0;
+}
+.rail .role span { display: block; }
+.rail .role .inst { color: var(--ink-3); }
+
+/* nav */
+.rail nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+}
+.rail nav a {
+  display: block;
+  line-height: var(--lh-list);
+  color: var(--ink-2);
+  position: relative;
+  padding-left: 16px;
+}
+.rail nav a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: var(--ink-3);
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+  transition: transform .2s ease, background .2s ease;
+}
+.rail nav a:hover { color: var(--ink); }
+.rail nav a:hover::before { transform: translateY(-50%) scaleX(1); }
+.rail nav a.active { color: var(--ink); }
+.rail nav a.active::before {
+  transform: translateY(-50%) scaleX(1);
+  background: var(--accent);
+}
+
+/* icon row */
+.rail .icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+}
+.rail .icons a {
+  width: 20px;
+  height: 20px;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .18s ease, opacity .18s ease;
+}
+/* Most marks now carry their own brand fill, so a colour change alone is no
+   longer a hover affordance for them — the opacity shift covers those. */
+.rail .icons a:hover { color: var(--accent); opacity: .68; }
+.rail .icons svg { width: 100%; height: 100%; display: block; }
+
+/* CV button */
+.rail .cv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 42px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--paper);
+  border: 1px solid var(--accent);
+  transition: background .2s ease, border-color .2s ease;
+  margin-top: auto;
+}
+.rail .cv:hover {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Content column
+ * ------------------------------------------------------------------ */
+.content {
+  padding: 76px 84px 120px;
+  max-width: 1040px;  /* border-box: 1040 - 168 padding = ~872px measure */
+  position: relative;  /* containing block for the job-market badge */
+}
+
+section { scroll-margin-top: 24px; }
+section + section { margin-top: 72px; }
+
+/* Sentence case, in the prose face. The hairline rule and the accent bar
+   carry the hierarchy — the heading itself does not have to shout. */
+.section-title {
+  position: relative;
+  font-size: var(--fs-title);
+  line-height: var(--lh-tight);
+  color: var(--ink);
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+  margin: 0 0 28px;
+}
+.section-title::before {          /* accent bar riding on the rule */
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 36px;
+  height: 3px;
+  background: var(--accent);
+}
+
+.sub-title {
+  color: var(--accent);
+  margin: 0 0 20px;
+}
+section > .sub-title:not(:first-of-type) { margin-top: 44px; }
+
+p { margin: 0 0 18px; }
+p:last-child { margin-bottom: 0; }
+
+.lede p { text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+
+/* The one link that sits inside running prose. Body text and --accent differ
+   in hue but barely in luminance, so colour alone cannot carry it — the
+   underline is what makes it a link. */
+.lede a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Papers
+ * ------------------------------------------------------------------ */
+.paper { margin-bottom: 34px; }
+.paper:last-child { margin-bottom: 0; }
+
+/* One running citation per entry. The title is the link target; own name
+   is bolded so an entry is still scannable at a glance. */
+.cite {
+  margin: 0 0 10px;
+  color: var(--ink-2);
+}
+.cite b { font-weight: 700; color: var(--ink); }
+
+.cite .t {                       /* work in progress — nothing to link to */
+  color: var(--ink);
+}
+/* Published — the title is the hyperlink, and the primary thing to click in
+   the entry. It sits in --ink-2 text at nearly the same luminance, so the
+   underline does all the work and inherits the full link colour rather than
+   the 35% tint, which composited to a near-invisible 1.8:1. */
+.cite a.t {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.cite a.t:hover { color: var(--accent-2); }
+
+/* Full size like the rest of the citation, but the palest ink on the
+   page: present for the record, not competing for attention. */
+.cite .doi {
+  color: var(--ink-3);
+  overflow-wrap: anywhere;       /* a DOI is one unbreakable token */
+}
+.cite .doi:hover { color: var(--accent); }
+
+/* meta row: abstract toggle + links, side by side; toggle goes
+   full-width and drops below the links once it is opened */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 20px;
+}
+.meta > a,
+.meta summary {
+  color: var(--accent);
+  cursor: pointer;
+}
+.meta > a:hover, .meta summary:hover { color: var(--accent-2); }
+
+.meta details { flex: 0 0 auto; }
+.meta details[open] { flex: 1 0 100%; order: 1; margin-top: 12px; }
+
+.meta summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.meta summary::-webkit-details-marker { display: none; }
+.meta summary::before {
+  content: "\203A";                 /* › */
+  display: inline-block;
+  transition: transform .2s ease;
+}
+.meta details[open] summary::before { transform: rotate(90deg); }
+
+.abs {
+  border-left: 1px solid var(--rule);
+  padding: 2px 0 2px 20px;
+  margin-top: 12px;
+  color: var(--ink-2);
+  text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+/* Focused programmatically when the abstract opens (see script.js), so the
+   keyboard path continues forward instead of jumping back up to the link row
+   that `order` has left sitting above it. */
+.abs:focus-visible { outline-offset: 6px; }
+.abs.tbd { color: var(--tbd); }
+
+/* icon link inside a .meta row (arXiv) */
+.meta > a.ic-link {
+  display: inline-flex;
+  align-self: center;
+  color: var(--accent);
+  transition: opacity .18s ease;
+}
+.meta > a.ic-link:hover { color: var(--accent-2); opacity: .68; }
+.ic { width: 15px; height: 15px; display: block; }
+
+/* ------------------------------------------------------------------ *
+ *  Software
+ *
+ *  Package names are identifiers, not prose — mono, at body size, with
+ *  the casing left alone. "BTtest" must never render as "BTTEST", which
+ *  is why these cannot join the uppercase label rule.
+ * ------------------------------------------------------------------ */
+.pkg { margin-bottom: 30px; }
+.pkg:last-child { margin-bottom: 0; }
+.pkg h3 {
+  font-family: var(--mono);
+  font-size: var(--fs-body);
+  margin: 0 0 4px;
+  display: flex;
+  flex-wrap: wrap;      /* name + version must be able to break on a phone */
+  align-items: baseline;
+  gap: 2px 14px;
+}
+.pkg h3 .ver { color: var(--ink-3); }
+.pkg p { margin: 0 0 10px; color: var(--ink-2); }
+
+/* ------------------------------------------------------------------ *
+ *  Teaching
+ * ------------------------------------------------------------------ */
+.courses { margin: 0; }
+.course {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 4px 24px;
+  padding: 0 0 18px;   /* the term column carries the grouping — no rules needed */
+}
+.course:last-child { padding-bottom: 0; }
+.course .term {
+  color: var(--ink-3);
+  padding-top: 4px;
+}
+.course .what { margin: 0; }
+.course .what .n { color: var(--ink); }   /* course name: darker, upright — as in Awards */
+.course .what .lvl {
+  display: block;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Inline year-paragraph lists (talks, awards)
+ * ------------------------------------------------------------------ */
+.years p {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 24px;
+  margin: 0 0 14px;
+  align-items: baseline;
+}
+.years p:last-child { margin-bottom: 0; }
+.years .y { color: var(--ink-3); }
+.years .e { color: var(--ink-2); }
+.years .e .n { color: var(--ink); }   /* award name: darker, not heavier */
+
+.legend {
+  color: var(--ink-3);
+  margin-top: 18px;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Contact
+ * ------------------------------------------------------------------ */
+.contact-mail {
+  display: inline-block;
+  margin-bottom: 18px;
+}
+.address {
+  color: var(--ink-2);
+  line-height: var(--lh-list);
+}
+.address span { display: block; }
+
+footer {
+  margin-top: 72px;
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Job market badge
+ *
+ *  Taken out of flow into the whitespace above the first section title,
+ *  so it announces the status without displacing a single line of the
+ *  page. Square corners and a hairline rule keep it in the same
+ *  language as the rest of the furniture; the dot is the one round
+ *  thing on the site, which is precisely why the eye finds it.
+ * ------------------------------------------------------------------ */
+.jobmarket {
+  position: absolute;
+  top: 24px;
+  right: 84px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 12px;
+  line-height: 1.15;
+  white-space: nowrap;   /* a second line would grow down into the About rule */
+  color: var(--accent);
+  background: var(--paper);
+  border: 1px solid var(--accent-3);
+}
+
+.jobmarket .dot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* The halo is a second disc swelling and fading out from underneath, so
+   the dot itself never moves and the badge box never reflows. */
+.jobmarket .dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2.4s cubic-bezier(.25,.6,.35,1) infinite;
+}
+@keyframes pulse {
+  0%        { transform: scale(1); opacity: .5; }
+  70%, 100% { transform: scale(3); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Responsive
+ *
+ *  No font-size overrides live down here. --fs-display already scales
+ *  with viewport height; everything else holds its size at every width,
+ *  and the breakpoints adjust space, not type.
+ * ------------------------------------------------------------------ */
+@media (max-width: 1100px) {
+  :root { --rail: 260px; }
+  .rail { padding: 36px 30px 28px; gap: 20px; }
+  .content { padding: 56px 48px 100px; }
+  .jobmarket { top: 18px; right: 48px; }   /* insets track .content padding */
+}
+
+/* ---- Short viewports -------------------------------------------------
+   The rail is ~820px tall at full size, which does not fit a typical
+   laptop. Compress it so it fits without scrolling or clipping. The nav
+   gives up leading rather than size — that is where the room is.
+   Guarded to the range where the rail is still a sticky sidebar.        */
+@media (min-width: 861px) and (max-height: 900px) {
+  .rail { padding: 32px 40px 28px; gap: 18px; }
+  .rail .portrait { max-width: 140px; }
+  .rail nav ul { padding-top: 14px; }
+  .rail nav a { line-height: var(--lh-body); }
+  .rail .icons { padding-top: 14px; }
+}
+
+@media (min-width: 861px) and (max-height: 740px) {
+  .rail { padding: 26px 36px 22px; gap: 14px; }
+  .rail .portrait { max-width: 110px; }
+  .rail nav a { line-height: 1.5; }
+  .rail .cv { height: 38px; }
+}
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail {
+    position: static;
+    height: auto;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 36px 28px 28px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 24px 28px;
+    align-items: start;
+  }
+  .rail .portrait { max-width: 120px; }
+  .rail .ident { grid-column: 2; }
+  .rail nav { grid-column: 1 / -1; }
+  .rail nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 22px;
+  }
+  .rail nav a { padding-left: 0; }
+  .rail nav a::before { display: none; }
+  .rail nav a.active { color: var(--accent); }
+  .rail .icons { grid-column: 1 / -1; gap: 4px; }
+  /* 20px glyphs are far too small to tap; pad out to a ~40px hit area
+     without shifting the layout. */
+  .rail .icons a { padding: 10px; box-sizing: content-box; }
+  .rail .cv { grid-column: 1 / -1; margin-top: 0; }
+  .content { padding: 44px 28px 80px; }
+  .jobmarket { top: 9px; right: 28px; }
+}
+
+/* Justified text needs a wide column; in a narrow one it opens rivers. */
+@media (max-width: 700px) {
+  .lede p, .abs { text-align: left; }
+}
+
+@media (max-width: 560px) {
+  .rail { grid-template-columns: 1fr; }
+  .rail .ident { grid-column: 1; }
+  .rail .portrait { max-width: 140px; }
+  .rail nav ul { gap: 0 18px; }
+  .content { padding: 36px 22px 72px; }
+  section + section { margin-top: 56px; }
+  .course { grid-template-columns: 1fr; }
+  .years p { grid-template-columns: 1fr; gap: 2px; }
+  /* real vertical separation so adjacent links are not one continuous
+     mis-tappable strip */
+  .meta { gap: 10px 18px; }
+  .abs { padding-left: 14px; }
+  /* Less room above the first rule here, so the badge gives up padding
+     rather than the gap that keeps it clear of the section title. */
+  .jobmarket { top: 5px; right: 22px; padding: 4px 10px; gap: 7px; }
+}
+
+/* The one place --track is not honoured: at 29 tracked characters the
+   badge is wider than a 320px phone, and it is a fixed string that
+   cannot be allowed to wrap. Tightening it here beats truncating it. */
+@media (max-width: 360px) {
+  .jobmarket { letter-spacing: .08em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  /* Pseudo-elements need naming explicitly — `*` never matches them, and the
+     two transforms that animate here (the nav tick, the summary chevron) both
+     live on ::before. */
+  *, *::before, *::after { transition: none !important; }
+  .jobmarket .dot::after { display: none; }   /* the dot stays, the pulse goes */
+}
+
+/* ------------------------------------------------------------------ *
+ *  Print — drop the furniture, keep the record
+ * ------------------------------------------------------------------ */
+@media print {
+  .rail nav, .rail .icons, .rail .cv, .rail .portrait { display: none; }
+  .jobmarket { display: none; }   /* furniture, and .content loses the padding it sits in */
+  .shell { display: block; }
+  .rail { position: static; height: auto; border: 0; padding: 0 0 18px; }
+  .content { padding: 0; max-width: none; }
+  body { font-size: 11pt; }
+  a { color: var(--ink); }
+  /* Only hide the toggle once it has actually opened. script.js expands every
+     abstract on beforeprint, but if that never runs — JS blocked, or a print
+     path that does not fire the event — a closed abstract must still show its
+     "Abstract" label rather than printing as an unexplained blank gap. */
+  .meta details[open] summary { display: none; }
+  .abs { margin-top: 8px; }
+  section { break-inside: avoid; }
+}
