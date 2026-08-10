@@ -60,6 +60,22 @@
     });
   });
 
+  /* ---- count CV downloads as a GoatCounter event ---- */
+  var cv = document.querySelector('a.cv');
+  if (cv) {
+    cv.addEventListener('click', function () {
+      // count.js is loaded async, so on a very fast click it may not be there
+      // yet. Losing that one count is fine; throwing inside a click handler on
+      // a download link is not.
+      if (!window.goatcounter || !window.goatcounter.count) { return; }
+      window.goatcounter.count({
+        path:  'cv-download',
+        title: 'CV download',
+        event: true
+      });
+    });
+  }
+
   /* ---- print: expand every abstract so nothing is silently omitted ---- */
   var wasOpen = null;
   window.addEventListener('beforeprint', function () {
