@@ -49,7 +49,7 @@
      fills in the rail icons — the near-black GitHub mark worst of all. */
   color-scheme: light;
 
-  --paper:    #f4f4f1;
+  --paper:    #fafaf8;
   --ink:      #16181c;
   --ink-2:    #4a4c52;   /* darkened for legibility */
   --ink-3:    #5f6167;   /* 5.6:1 — the label size needs more than the AA floor */
@@ -345,7 +345,7 @@ p:last-child { margin-bottom: 0; }
    is bolded so an entry is still scannable at a glance. */
 .cite {
   margin: 0 0 10px;
-  color: var(--ink-2);
+  color: var(--ink);
 }
 .cite b { font-weight: 700; color: var(--ink); }
 
@@ -367,7 +367,7 @@ p:last-child { margin-bottom: 0; }
 /* Full size like the rest of the citation, but the palest ink on the
    page: present for the record, not competing for attention. */
 .cite .doi {
-  color: var(--ink-3);
+  color: var(--ink);
   overflow-wrap: anywhere;       /* a DOI is one unbreakable token */
 }
 .cite .doi:hover { color: var(--accent); }
@@ -490,8 +490,8 @@ p:last-child { margin-bottom: 0; }
 }
 .years p:last-child { margin-bottom: 0; }
 .years .y { color: var(--ink-3); }
-.years .e { color: var(--ink-2); }
-.years .e .n { color: var(--ink); }   /* award name: darker, not heavier */
+.years .e { color: var(--ink); }
+.years .e .n { font-weight: 700; }   /* award name: bold */
 
 .legend {
   color: var(--ink-3);
@@ -506,7 +506,7 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: 18px;
 }
 .address {
-  color: var(--ink-2);
+  color: var(--ink);
   line-height: var(--lh-list);
 }
 .address span { display: block; }
