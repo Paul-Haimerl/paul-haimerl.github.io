@@ -324,7 +324,13 @@ section > .sub-title:not(:first-of-type) { margin-top: 44px; }
 p { margin: 0 0 18px; }
 p:last-child { margin-bottom: 0; }
 
-.lede p { text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+/* Running prose. Everything that is read as text rather than scanned as a
+   record — the About lede, the abstracts, the package descriptions, the
+   talks list — takes the same setting: full ink, justified, hyphenated. */
+.lede p,
+.abs,
+.pkg p,
+#talks .years .e { text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
 
 /* The one link that sits inside running prose. Body text and --accent differ
    in hue but barely in luminance, so colour alone cannot carry it — the
@@ -414,10 +420,7 @@ p:last-child { margin-bottom: 0; }
   border-left: 1px solid var(--rule);
   padding: 2px 0 2px 20px;
   margin-top: 12px;
-  color: var(--ink-2);
-  text-align: justify;
-  -webkit-hyphens: auto;
-  hyphens: auto;
+  color: var(--ink);
 }
 /* Focused programmatically when the abstract opens (see script.js), so the
    keyboard path continues forward instead of jumping back up to the link row
@@ -454,7 +457,7 @@ p:last-child { margin-bottom: 0; }
   gap: 2px 14px;
 }
 .pkg h3 .ver { color: var(--ink-3); }
-.pkg p { margin: 0 0 10px; color: var(--ink-2); }
+.pkg p { margin: 0 0 10px; color: var(--ink); }
 
 /* ------------------------------------------------------------------ *
  *  Teaching
@@ -637,7 +640,7 @@ footer {
 
 /* Justified text needs a wide column; in a narrow one it opens rivers. */
 @media (max-width: 700px) {
-  .lede p, .abs { text-align: left; }
+  .lede p, .abs, .pkg p, #talks .years .e { text-align: left; }
 }
 
 @media (max-width: 560px) {
